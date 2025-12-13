@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Amogh Says Sorry 💌</title>
+  <style>
+    :root{
+      --bg:#fff7fb; --card:#fff; --accent:#ff7aa2; --muted:#6b6b6b; --shadow:0 6px 18px rgba(112,95,120,.12);
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(180deg,var(--bg),#fff);padding:24px}
+    .card{max-width:720px;width:100%;background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:28px;display:grid;grid-template-columns:1fr 300px;gap:20px}
+    @media(max-width:800px){.card{grid-template-columns:1fr}}
+    h1{margin:0;font-size:24px}
+    p{color:var(--muted)}
+    input,textarea,select,button{width:100%;padding:10px;border-radius:10px;border:1px solid #f0e8ef;font-size:14px}
+    textarea{min-height:100px;resize:vertical}
+    button{background:linear-gradient(90deg,var(--accent),#ff9abf);color:#fff;border:none;font-weight:600;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+    footer{text-align:center;margin-top:10px;color:var(--muted);font-size:12px}
+    .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2b2030;color:#fff;padding:10px 14px;border-radius:10px;display:none}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div>
+      <h1>Amogh Says Sorry 💌</h1>
+      <p>Fill this out and Amogh sends you a cute apology mail.</p>
+
+      <form id="apologyForm">
+        <label>Your name</label>
+        <input id="senderName" required placeholder="e.g. Amogh" />
+
+        <label>Recipient email</label>
+        <input id="recipientEmail" type="email" required placeholder="their@email.com" />
+
+        <label>Tone</label>
+        <select id="tone">
+          <option value="sincere">Sincere</option>
+          <option value="playful">Playful</option>
+          <option value="short">Short</option>
+        </select>
+
+        <label>Message (optional)</label>
+        <textarea id="message" placeholder="Do not Sugarcoat, he likes it as it is"></textarea>
+
+        <button type="submit">Send apology</button>
+      </form>
+      <footer>Made with Empathy</footer>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const form = document.getElementById('apologyForm');
+    const toast = document.getElementById('toast');
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(()=>toast.style.display='none',4000);
+    }
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const payload = {
+        senderName: senderName.value,
+        recipientEmail: recipientEmail.value,
+        tone: tone.value,
+        message: message.value
+      };
+      try{
+        const res = await fetch('/api/send', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if(res.ok) showToast('Apology sent 💌');
+        else showToast(data.error || 'Failed');
+      }catch(err){ showToast('Error sending'); }
+    });
+  </script>
+</body>
+</html>
+
