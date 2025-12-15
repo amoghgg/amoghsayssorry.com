@@ -4,29 +4,82 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Amogh Says Sorry 💌</title>
+
   <style>
     :root{
-      --bg:#fff7fb; --card:#fff; --accent:#ff7aa2; --muted:#6b6b6b; --shadow:0 6px 18px rgba(112,95,120,.12);
-      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      --bg:#fff7fb;
+      --card:#fff;
+      --accent:#ff7aa2;
+      --muted:#6b6b6b;
+      --shadow:0 6px 18px rgba(112,95,120,.12);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
     }
-    body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(180deg,var(--bg),#fff);padding:24px}
-    .card{max-width:720px;width:100%;background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:28px;display:grid;grid-template-columns:1fr 300px;gap:20px}
-    @media(max-width:800px){.card{grid-template-columns:1fr}}
+    body{
+      margin:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      background:linear-gradient(180deg,var(--bg),#fff);
+      padding:24px;
+    }
+    .card{
+      max-width:720px;
+      width:100%;
+      background:#fff;
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      padding:28px;
+      display:grid;
+      grid-template-columns:1fr 300px;
+      gap:20px;
+    }
+    @media(max-width:800px){
+      .card{grid-template-columns:1fr}
+    }
     h1{margin:0;font-size:24px}
     p{color:var(--muted)}
-    input,textarea,select,button{width:100%;padding:10px;border-radius:10px;border:1px solid #f0e8ef;font-size:14px}
+    input,textarea,select,button{
+      width:100%;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid #f0e8ef;
+      font-size:14px;
+      margin-bottom:10px;
+    }
     textarea{min-height:100px;resize:vertical}
-    button{background:linear-gradient(90deg,var(--accent),#ff9abf);color:#fff;border:none;font-weight:600;cursor:pointer}
-    .small{font-size:13px;color:var(--muted)}
-    footer{text-align:center;margin-top:10px;color:var(--muted);font-size:12px}
-    .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2b2030;color:#fff;padding:10px 14px;border-radius:10px;display:none}
+    button{
+      background:linear-gradient(90deg,var(--accent),#ff9abf);
+      color:#fff;
+      border:none;
+      font-weight:600;
+      cursor:pointer;
+    }
+    footer{
+      text-align:center;
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:24px;
+      transform:translateX(-50%);
+      background:#2b2030;
+      color:#fff;
+      padding:10px 14px;
+      border-radius:10px;
+      display:none;
+    }
   </style>
 </head>
+
 <body>
   <div class="card">
     <div>
       <h1>Amogh Says Sorry 💌</h1>
-      <p>Fill this out and Amogh sends you a cute apology mail.</p>
+      <p>Fill this out and Amogh sends a thoughtful apology mail.</p>
 
       <form id="apologyForm">
         <label>Your name</label>
@@ -43,44 +96,54 @@
         </select>
 
         <label>Message (optional)</label>
-        <textarea id="message" placeholder="Do not Sugarcoat, he likes it as it is"></textarea>
+        <textarea id="message" placeholder="What are you apologising for?"></textarea>
 
         <button type="submit">Send apology</button>
       </form>
-      <footer>Made with Empathy</footer>
+
+      <footer>Made with empathy</footer>
     </div>
   </div>
 
   <div class="toast" id="toast"></div>
 
   <script>
-    const form = document.getElementById('apologyForm');
-    const toast = document.getElementById('toast');
+    const form = document.getElementById("apologyForm");
+    const toast = document.getElementById("toast");
+
     function showToast(msg){
       toast.textContent = msg;
-      toast.style.display = 'block';
-      setTimeout(()=>toast.style.display='none',4000);
+      toast.style.display = "block";
+      setTimeout(() => toast.style.display = "none", 4000);
     }
-    form.addEventListener('submit', async (e)=>{
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
+
       const payload = {
-        senderName: senderName.value,
-        recipientEmail: recipientEmail.value,
+        senderName: senderName.value.trim(),
+        recipientEmail: recipientEmail.value.trim(),
         tone: tone.value,
-        message: message.value
+        message: message.value.trim()
       };
-      try{
-        const res = await fetch('/api/send', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify(payload)
+
+      try {
+        const res = await fetch("/api/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
         });
-        const data = await res.json();
-        if(res.ok) showToast('Apology sent 💌');
-        else showToast(data.error || 'Failed');
-      }catch(err){ showToast('Error sending'); }
+
+        if (res.ok) {
+          window.location.href = "/thankyou.html";
+        } else {
+          const data = await res.json();
+          showToast(data.error || "Failed to send apology");
+        }
+      } catch (err) {
+        showToast("Something went wrong");
+      }
     });
   </script>
 </body>
 </html>
-
